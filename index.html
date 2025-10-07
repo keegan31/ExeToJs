@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>EXE to JS Converter</title>
+
+    <meta charset="UTF-8">
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            max-width: 800px;
+
+            margin: 50px auto;
+
+            padding: 20px;
+
+        }
+
+        .upload-area {
+
+            border: 2px dashed #ccc;
+
+            border-radius: 10px;
+
+            padding: 40px;
+
+            text-align: center;
+
+            margin: 20px 0;
+
+        }
+
+        .file-input {
+
+            margin: 20px 0;
+
+        }
+
+        .convert-btn {
+
+            background: #007bff;
+
+            color: white;
+
+            padding: 12px 30px;
+
+            border: none;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+        }
+
+        .convert-btn:disabled {
+
+            background: #ccc;
+
+            cursor: not-allowed;
+
+        }
+
+        .warning {
+
+            background: #fff3cd;
+
+            border: 1px solid #ffeaa7;
+
+            color: #856404;
+
+            padding: 15px;
+
+            border-radius: 5px;
+
+            margin: 20px 0;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1> EXE to JS Converter</h1>
+
+    <p>Upload EXE File, In Return Get JS</p>
+
+    
+
+    <div class="warning">
+
+        <strong>Author Not Responsible For Illegal & Harmfull Usage.</strong><br>This System Made For Educational Purposes.
+    </div>
+
+    <div class="upload-area">
+
+        <h3>Select EXE File 📧</h3>
+
+        <input type="file" id="exeFile" class="file-input" accept=".exe">
+
+        <br>
+
+        <button class="convert-btn" onclick="convertExe()" id="convertBtn" disabled>Convert to JS</button>
+
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+
+        const fileInput = document.getElementById('exeFile');
+
+        const convertBtn = document.getElementById('convertBtn');
+
+        fileInput.addEventListener('change', function() {
+
+            if (this.files.length > 0) {
+
+                convertBtn.disabled = false;
+
+            } else {
+
+                convertBtn.disabled = true;
+
+            }
+
+        });
+
+        async function convertExe() {
+
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = '🔄 Converting...';
+
+            try {
+
+                const formData = new FormData();
+
+                formData.append('exeFile', file);
+
+                const response = await fetch('converter.php', {
+
+                    method: 'POST',
+
+                    body: formData
+
+                });
+
+                if (response.ok) {
+
+                    const blob = await response.blob();
+
+                    const url = window.URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+
+                    a.href = url;
+
+                    a.download = file.name.replace('.exe', '.js');
+
+                    document.body.appendChild(a);
+
+                    a.click();
+
+                    document.body.removeChild(a);
+
+                    window.URL.revokeObjectURL(url);
+
+                    
+
+                    resultDiv.innerHTML = '✅ JS file';
+
+                } else {
+
+                    resultDiv.innerHTML = '❌ Conversion failed';
+
+                }
+
+            } catch (error) {
+
+                resultDiv.innerHTML = '❌ Error: ' + error.message;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
